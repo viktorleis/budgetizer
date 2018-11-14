@@ -46,16 +46,15 @@ bool isValid(Config& config, Workload& workload) {
    float sumSpaceNeeded = 0;
    for (AccessGroup g : workload)
       sumSpaceNeeded += g.size;
-   float sumSpace = 0;
    vector<unsigned> indexes;
    for (unsigned t=0; t<techs.size(); t++)
       if (config[t])
          indexes.push_back(t);
    for (unsigned i=1; i<indexes.size(); i++)
-      if ((config[indexes[i]] * techs[indexes[i]].capacity < config[indexes[i-1]]) * (techs[indexes[i-1]].capacity))
-         return false;
-   if (config[indexes.back()] * techs[indexes.back()].capacity < sumSpaceNeeded)
-      return false;
+      if ((config[indexes[i]] * techs[indexes[i]].capacity) < (config[indexes[i-1]] * techs[indexes[i-1]].capacity))
+         return false; // level is not inclusive
+   if ((config[indexes.back()] * techs[indexes.back()].capacity) < sumSpaceNeeded)
+      return false; // last-level device not big enough for data
    return true;
 }
 
